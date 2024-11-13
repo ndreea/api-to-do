@@ -15,6 +15,7 @@ function conectar(){
     });
 }
 
+
 export function leerTareas(){
     return new Promise(async (ok,ko) => {
 
@@ -22,7 +23,7 @@ export function leerTareas(){
 
         try{
 
-            let tareas = await conexion `SELECT * FROM tareas`;
+            let tareas = await conexion `SELECT * FROM tareas ORDER BY id`; //ORDER BY id - Tiene que traer las tareas ordenadas por id
 
             conexion.end();
 
@@ -36,6 +37,7 @@ export function leerTareas(){
         }
     });
 }
+
 
 export function crearTarea(tarea){
     return new Promise(async (ok,ko) => {
@@ -55,10 +57,10 @@ export function crearTarea(tarea){
     
             ko({ error : "error en la base de datos" });
     
-        }
-    
+        }   
     });
 }
+
 
 export function borrarTarea(id){
     return new Promise(async (ok,ko) => {
@@ -75,8 +77,48 @@ export function borrarTarea(id){
         }catch(error){
             ko({error: "error en base de datos"});
         }
-
     });
 }
+
+
+export function editarTarea(id,texto){
+    return new Promise(async (ok,ko) => {
+
+        let conexion = conectar();
+
+        try{
+            let {count}= await conexion `UPDATE tareas SET tarea = ${texto} WHERE id = ${id}`;
+
+            conexion.end();
+
+            ok(count);
+
+        }catch(error){
+            ko({error: "error en base de datos"});
+        }
+    });
+}
+
+
+export function editarEstado(id){
+    return new Promise(async (ok,ko) => {
+
+        let conexion = conectar();
+
+        try{
+            let {count}= await conexion `UPDATE tareas SET estado = NOT estado WHERE id = ${id}`; //Pasará de true a false (estado = not estado)
+
+            conexion.end();
+
+            ok(count);
+
+        }catch(error){
+            ko({error: "error en base de datos"});
+        }
+    });
+}
+
+
+
 
 
