@@ -6,9 +6,15 @@ dotenv.config(); //lee el fichero .env y crea las variables de entorno
 /*-----------------------------*/
 
 import express from "express";
+import cors from "cors"; //Importamos cors una vez que lo hayamos instalado en la terminal
 import { leerTareas,crearTarea,borrarTarea,editarTarea,editarEstado } from "./db.js"; //Nos importamos las funciones tareas de la carpeta db.js
 
 const servidor = express();
+
+
+//El middleware CORS tiene que ser siempre el primero
+servidor.use(cors());
+
 
 servidor.use((peticion,respuesta,siguiente) => {
     console.log("entramos al middleware a hacer cualquier proceso");
@@ -67,7 +73,7 @@ servidor.post("/tareas/nueva", async (peticion,respuesta,siguiente) => {
 
 servidor.put("/tareas/actualizar/:id([0-9]+)/:operacion(1|2)", async (peticion,respuesta,siguiente) => {
 
-    let operacion = Number(peticion.params.operacion); //Estraemos la operación de la URL
+    let operacion = Number(peticion.params.operacion); //Estraemos la operación de la URL que es 1 o 2
     let id = Number(peticion.params.operacion); //Estraemos el id de la URL
     let {tarea} = peticion.body; //Extraemos la tarea del cuerpo de la petición - Tendrá un texto o undefined
 
@@ -79,7 +85,7 @@ servidor.put("/tareas/actualizar/:id([0-9]+)/:operacion(1|2)", async (peticion,r
     }
     try{
 
-        let cantidad = await operaciones[operacion - 1](id,tarea); //Invocamos la operación que convenga [operacion - 1]
+        let cantidad = await operaciones[operacion - 1](id,tarea); //Invocamos la operación que convenga [operacion - 1] los índices son 0 y 1
 
         respuesta.json({ resultado : cantidad ? "ok" : "ko" });
 
@@ -91,8 +97,6 @@ servidor.put("/tareas/actualizar/:id([0-9]+)/:operacion(1|2)", async (peticion,r
     }
 
 });
-
-
 
 
 //Middleware de eliminar la tarea
@@ -118,6 +122,7 @@ servidor.use((error,peticion,respuesta,siguiente) => {
     respuesta.status(400);
     respuesta.json({ error : "error en la petición" });
 });
+
 
 //Middleware de opción por defecto (404) - si se pone una url que no existe, sale un error
 servidor.use((peticion,respuesta) => {
