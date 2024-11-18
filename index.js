@@ -74,13 +74,13 @@ servidor.post("/tareas/nueva", async (peticion,respuesta,siguiente) => {
 servidor.put("/tareas/actualizar/:id([0-9]+)/:operacion(1|2)", async (peticion,respuesta,siguiente) => {
 
     let operacion = Number(peticion.params.operacion); //Estraemos la operación de la URL que es 1 o 2
-    let id = Number(peticion.params.operacion); //Estraemos el id de la URL
+    let id = Number(peticion.params.id); //Estraemos el id de la URL
     let {tarea} = peticion.body; //Extraemos la tarea del cuerpo de la petición - Tendrá un texto o undefined
 
     let operaciones = [editarTarea, editarEstado]; //Creamos una variable en donde guardamos las operaciones :operacion(1|2)
 
     //Validamos la tarea
-    if(operacion == 1 && (!tarea || tarea.trim()) == ""){
+    if(operacion == 1 && (!tarea || tarea.trim() == "")){
         return siguiente(true);
     }
     try{
